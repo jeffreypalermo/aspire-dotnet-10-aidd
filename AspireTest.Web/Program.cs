@@ -56,3 +56,9 @@ app.MapRazorComponents<App>()
 app.MapDefaultEndpoints();
 
 app.Run();
+
+// Make the Program class visible to integration tests
+namespace AspireTest.Web
+{
+    public partial class Program { }
+}

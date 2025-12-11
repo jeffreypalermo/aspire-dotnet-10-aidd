@@ -35,7 +35,18 @@
       "Bash(dir:*)",
       "Bash(git init:*)",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit - .NET Aspire 13 distributed application with task management\n\nThis .NET 10 Aspire application demonstrates:\n- Distributed application architecture with AppHost orchestration\n- API Service with task management and Redis caching endpoints\n- Blazor web frontend with interactive server rendering\n- Service discovery and resilience patterns\n- Redis container integration for caching\n- Comprehensive test coverage (unit, integration, E2E)\n- OpenTelemetry instrumentation for observability\n\nFeatures:\n- Task CRUD operations with EF Core InMemory database\n- Redis cache management UI\n- Health check endpoints\n- Development SSL certificate trust for service-to-service communication\n- Aspire Dashboard for monitoring and debugging\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git fetch:*)",
+      "Bash(git pull:*)",
+      "Bash(git commit:*)",
+      "Bash(del \"AspireTest.ApiService.Tests\\MSTestSettings.cs\")",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet tool install:*)",
+      "Bash(del AspireTest.Web.IntegrationTestsUnitTest1.cs)"
     ]
   }
 }
