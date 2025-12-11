@@ -2,31 +2,30 @@ using System.Net;
 using System.Net.Http.Json;
 using AspireTest.ApiService.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AspireTest.IntegrationTests;
 
-[TestClass]
+[TestFixture]
 public class TaskApiIntegrationTests
 {
     private static WebApplicationFactory<Program>? _factory;
     private static HttpClient? _client;
 
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext context)
+    [OneTimeSetUp]
+    public void ClassInitialize()
     {
         _factory = new WebApplicationFactory<Program>();
         _client = _factory.CreateClient();
     }
 
-    [ClassCleanup]
-    public static void ClassCleanup()
+    [OneTimeTearDown]
+    public void ClassCleanup()
     {
         _client?.Dispose();
         _factory?.Dispose();
     }
 
-    [TestMethod]
+    [Test]
     public async Task GetTasks_ReturnsSuccessAndTasks()
     {
         // Act
@@ -36,10 +35,10 @@ public class TaskApiIntegrationTests
         response.EnsureSuccessStatusCode();
         var tasks = await response.Content.ReadFromJsonAsync<TaskItem[]>();
         Assert.IsNotNull(tasks);
-        Assert.IsTrue(tasks.Length >= 2); // At least the 2 seeded tasks
+        Assert.That(tasks.Length, Is.GreaterThanOrEqualTo(2)); // At least the 2 seeded tasks
     }
 
-    [TestMethod]
+    [Test]
     public async Task CreateTask_ReturnsCreatedTask()
     {
         // Arrange
@@ -58,10 +57,10 @@ public class TaskApiIntegrationTests
         var createdTask = await response.Content.ReadFromJsonAsync<TaskItem>();
         Assert.IsNotNull(createdTask);
         Assert.AreEqual("Integration Test Task", createdTask.Title);
-        Assert.IsTrue(createdTask.Id > 0);
+        Assert.That(createdTask.Id, Is.GreaterThan(0));
     }
 
-    [TestMethod]
+    [Test]
     public async Task GetTaskById_ExistingTask_ReturnsTask()
     {
         // Arrange - Create a task first
@@ -85,7 +84,7 @@ public class TaskApiIntegrationTests
         Assert.AreEqual("Test Task for GetById", task.Title);
     }
 
-    [TestMethod]
+    [Test]
     public async Task GetTaskById_NonExistentTask_ReturnsNotFound()
     {
         // Act
@@ -95,7 +94,7 @@ public class TaskApiIntegrationTests
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    [TestMethod]
+    [Test]
     public async Task UpdateTask_ExistingTask_ReturnsUpdatedTask()
     {
         // Arrange - Create a task first
@@ -124,7 +123,7 @@ public class TaskApiIntegrationTests
         Assert.IsNotNull(updatedTask.CompletedDate);
     }
 
-    [TestMethod]
+    [Test]
     public async Task UpdateTask_NonExistentTask_ReturnsNotFound()
     {
         // Arrange
@@ -142,7 +141,7 @@ public class TaskApiIntegrationTests
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    [TestMethod]
+    [Test]
     public async Task DeleteTask_ExistingTask_ReturnsNoContent()
     {
         // Arrange - Create a task first
@@ -166,7 +165,7 @@ public class TaskApiIntegrationTests
         Assert.AreEqual(HttpStatusCode.NotFound, getResponse.StatusCode);
     }
 
-    [TestMethod]
+    [Test]
     public async Task DeleteTask_NonExistentTask_ReturnsNotFound()
     {
         // Act
@@ -176,7 +175,7 @@ public class TaskApiIntegrationTests
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
     }
 
-    [TestMethod]
+    [Test]
     public async Task CreateAndCompleteTask_Workflow()
     {
         // Arrange - Create a task

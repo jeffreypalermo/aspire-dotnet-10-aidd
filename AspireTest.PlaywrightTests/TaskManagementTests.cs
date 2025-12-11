@@ -1,15 +1,15 @@
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
-using Microsoft.Playwright.MSTest;
+using Microsoft.Playwright.NUnit;
 
 namespace AspireTest.PlaywrightTests;
 
-[TestClass]
+[TestFixture]
 public sealed class TaskManagementTests : PageTest
 {
     private const string WebFrontendUrl = "https://localhost:5146/tasks"; // Aspire web frontend port
 
-    [TestMethod]
+    [Test]
     public async Task TaskPage_Should_Load()
     {
         // Arrange & Act
@@ -19,7 +19,7 @@ public sealed class TaskManagementTests : PageTest
         await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Task Manager" })).ToBeVisibleAsync();
     }
 
-    [TestMethod]
+    [Test]
     public async Task TaskPage_Should_Show_Add_Button()
     {
         // Arrange
@@ -30,7 +30,7 @@ public sealed class TaskManagementTests : PageTest
         await Expect(addButton).ToBeVisibleAsync();
     }
 
-    [TestMethod]
+    [Test]
     public async Task Can_Create_New_Task()
     {
         // Arrange
@@ -56,7 +56,7 @@ public sealed class TaskManagementTests : PageTest
         await Expect(Page.GetByText("Playwright Test Task")).ToBeVisibleAsync();
     }
 
-    [TestMethod]
+    [Test]
     public async Task Can_Mark_Task_As_Complete()
     {
         // Arrange - Create a task first
@@ -78,7 +78,7 @@ public sealed class TaskManagementTests : PageTest
         await Expect(taskCard.GetByText("Completed")).ToBeVisibleAsync();
     }
 
-    [TestMethod]
+    [Test]
     public async Task Can_Edit_Task()
     {
         // Arrange - Create a task first
@@ -106,7 +106,7 @@ public sealed class TaskManagementTests : PageTest
         await Expect(Page.GetByText("Updated description")).ToBeVisibleAsync();
     }
 
-    [TestMethod]
+    [Test]
     public async Task Can_Delete_Task()
     {
         // Arrange - Create a task first
@@ -128,7 +128,7 @@ public sealed class TaskManagementTests : PageTest
         await Expect(Page.GetByText("Task to Delete")).Not.ToBeVisibleAsync();
     }
 
-    [TestMethod]
+    [Test]
     public async Task Can_Cancel_Adding_Task()
     {
         // Arrange
@@ -148,7 +148,7 @@ public sealed class TaskManagementTests : PageTest
         await Expect(Page.GetByText("Cancelled Task")).Not.ToBeVisibleAsync();
     }
 
-    [TestMethod]
+    [Test]
     public async Task Task_Navigation_Link_Should_Work()
     {
         // Arrange

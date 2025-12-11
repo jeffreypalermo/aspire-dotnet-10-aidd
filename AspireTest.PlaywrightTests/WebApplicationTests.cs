@@ -1,16 +1,16 @@
 using Microsoft.Playwright;
-using Microsoft.Playwright.MSTest;
+using Microsoft.Playwright.NUnit;
 
 namespace AspireTest.PlaywrightTests;
 
-[TestClass]
+[TestFixture]
 public sealed class WebApplicationTests : PageTest
 {
     // We'll need to find the actual web frontend URL from the dashboard
     // For now, assuming it will be on a dynamic port
     private string? _webFrontendUrl;
 
-    [TestInitialize]
+    [SetUp]
     public async Task Setup()
     {
         // Navigate to dashboard to find the web frontend URL
@@ -22,7 +22,7 @@ public sealed class WebApplicationTests : PageTest
         _webFrontendUrl = "https://localhost:5146"; // Aspire web frontend port
     }
 
-    [TestMethod]
+    [Test]
     public async Task WebFrontend_Should_Load_Successfully()
     {
         if (_webFrontendUrl == null)
@@ -38,7 +38,7 @@ public sealed class WebApplicationTests : PageTest
         Assert.IsTrue(await Page.TitleAsync() != "");
     }
 
-    [TestMethod]
+    [Test]
     public async Task WebFrontend_Should_Display_Weather_Data()
     {
         if (_webFrontendUrl == null)

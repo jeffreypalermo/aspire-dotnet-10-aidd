@@ -1,15 +1,15 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Playwright;
-using Microsoft.Playwright.MSTest;
+using Microsoft.Playwright.NUnit;
 
 namespace AspireTest.PlaywrightTests;
 
-[TestClass]
+[TestFixture]
 public sealed class AspireDashboardTests : PageTest
 {
     private const string DashboardUrl = "https://localhost:17297/login?t=1249ea9b1ec2663f9b45b4c37561e83a";
 
-    [TestMethod]
+    [Test]
     public async Task Dashboard_Should_Load_Successfully()
     {
         // Arrange & Act
@@ -22,7 +22,7 @@ public sealed class AspireDashboardTests : PageTest
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
-    [TestMethod]
+    [Test]
     public async Task Dashboard_Should_Show_Resources()
     {
         // Arrange
@@ -40,7 +40,7 @@ public sealed class AspireDashboardTests : PageTest
         await Page.WaitForSelectorAsync("text=apiservice,text=webfrontend", new() { Timeout = 10000, State = WaitForSelectorState.Attached });
     }
 
-    [TestMethod]
+    [Test]
     public async Task Dashboard_Should_Navigate_To_Console_Logs()
     {
         // Arrange

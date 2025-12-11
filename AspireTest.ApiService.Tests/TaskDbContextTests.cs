@@ -1,11 +1,10 @@
 using AspireTest.ApiService.Data;
 using AspireTest.ApiService.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AspireTest.ApiService.Tests;
 
-[TestClass]
+[TestFixture]
 public class TaskDbContextTests
 {
     private TaskDbContext GetInMemoryDbContext()
@@ -19,7 +18,7 @@ public class TaskDbContextTests
         return context;
     }
 
-    [TestMethod]
+    [Test]
     public async Task CanAddTask()
     {
         // Arrange
@@ -41,7 +40,7 @@ public class TaskDbContextTests
         Assert.IsTrue(tasks.Any(t => t.Title == "Test Task"));
     }
 
-    [TestMethod]
+    [Test]
     public async Task CanUpdateTask()
     {
         // Arrange
@@ -64,7 +63,7 @@ public class TaskDbContextTests
         Assert.IsNotNull(updatedTask.CompletedDate);
     }
 
-    [TestMethod]
+    [Test]
     public async Task CanDeleteTask()
     {
         // Arrange
@@ -81,7 +80,7 @@ public class TaskDbContextTests
         Assert.IsNull(deletedTask);
     }
 
-    [TestMethod]
+    [Test]
     public async Task CanQueryCompletedTasks()
     {
         // Arrange
@@ -101,7 +100,7 @@ public class TaskDbContextTests
         Assert.IsTrue(completedTasks.All(t => t.IsCompleted));
     }
 
-    [TestMethod]
+    [Test]
     public async Task DatabaseSeedDataExists()
     {
         // Arrange
@@ -116,7 +115,7 @@ public class TaskDbContextTests
         Assert.IsTrue(tasks.Any(t => t.Title == "Complete the Aspire tutorial"));
     }
 
-    [TestMethod]
+    [Test]
     public void TaskItem_ShouldRequireTitle()
     {
         // Arrange & Act
@@ -129,7 +128,7 @@ public class TaskDbContextTests
         Assert.AreEqual(string.Empty, task.Title);
     }
 
-    [TestMethod]
+    [Test]
     public void TaskItem_ShouldHaveCreatedDate()
     {
         // Arrange & Act

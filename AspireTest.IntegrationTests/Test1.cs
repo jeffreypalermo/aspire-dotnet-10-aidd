@@ -1,9 +1,9 @@
 ﻿namespace AspireTest.IntegrationTests;
 
-[TestClass]
+[TestFixture]
 public sealed class Test1
 {
-    [TestMethod]
+    [Test]
     public void TestMethod1()
     {
     }
