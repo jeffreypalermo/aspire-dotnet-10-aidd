@@ -1,0 +1,140 @@
+@page "/cache"
+@using AspireTest.Web
+@inject CacheApiClient CacheClient
+@rendermode InteractiveServer
+
+<PageTitle>Redis Cache Manager</PageTitle>
+
+<h1>Redis Cache Manager</h1>
+
+<div class="mb-4">
+    <button class="btn btn-primary" @onclick="ShowAddCacheForm">Add Cache Entry</button>
+    <button class="btn btn-secondary ms-2" @onclick="RefreshCache">Refresh</button>
+</div>
+
+@if (showAddForm)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">@(editingKey != null ? "Edit Cache Entry" : "Add New Cache Entry")</h5>
+            <div class="mb-3">
+                <label class="form-label">Key</label>
+                <input type="text" class="form-control" @bind="newKey" disabled="@(editingKey != null)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Data</label>
+                <textarea class="form-control" rows="3" @bind="newData"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Metadata (Optional)</label>
+                <input type="text" class="form-control" @bind="newMetadata" />
+            </div>
+            <button class="btn btn-success" @onclick="SaveCacheEntry">Save</button>
+            <button class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+        </div>
+    </div>
+}
+
+@if (cacheEntries == null)
+{
+    <p><em>Loading cache entries...</em></p>
+}
+else if (cacheEntries.Count == 0)
+{
+    <p><em>No cache entries found. Add your first entry above!</em></p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Data</th>
+                    <th>Metadata</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in cacheEntries)
+                {
+                    <tr>
+                        <td><code>@entry.Key</code></td>
+                        <td>@entry.Value.Data</td>
+                        <td>@(entry.Value.Metadata ?? "-")</td>
+                        <td>@entry.Value.CreatedAt.ToLocalTime().ToString("g")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-danger" @onclick="() => DeleteCacheEntry(entry.Key)">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="text-muted"><small>Cache entries expire after 10 minutes of inactivity.</small></p>
+}
+
+@code {
+    private List<CacheEntryResponse>? cacheEntries;
+    private bool showAddForm = false;
+    private string newKey = string.Empty;
+    private string newData = string.Empty;
+    private string? newMetadata;
+    private string? editingKey;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCacheEntries();
+    }
+
+    private async Task LoadCacheEntries()
+    {
+        cacheEntries = await CacheClient.GetAllCacheKeysAsync();
+    }
+
+    private void ShowAddCacheForm()
+    {
+        showAddForm = true;
+        editingKey = null;
+        newKey = string.Empty;
+        newData = string.Empty;
+        newMetadata = null;
+    }
+
+    private void CancelEdit()
+    {
+        showAddForm = false;
+        editingKey = null;
+        newKey = string.Empty;
+        newData = string.Empty;
+        newMetadata = null;
+    }
+
+    private async Task SaveCacheEntry()
+    {
+        if (string.IsNullOrWhiteSpace(newKey) || string.IsNullOrWhiteSpace(newData))
+            return;
+
+        await CacheClient.SetCacheAsync(newKey, newData, newMetadata);
+        showAddForm = false;
+        editingKey = null;
+        newKey = string.Empty;
+        newData = string.Empty;
+        newMetadata = null;
+        await LoadCacheEntries();
+    }
+
+    private async Task DeleteCacheEntry(string key)
+    {
+        await CacheClient.DeleteCacheAsync(key);
+        await LoadCacheEntries();
+    }
+
+    private async Task RefreshCache()
+    {
+        await LoadCacheEntries();
+    }
+}
