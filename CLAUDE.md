@@ -46,8 +46,10 @@ This is a .NET Aspire distributed application with the following structure:
 
 **Service Topology** (AspireTest.AppHost/AppHost.cs:1):
 - `cache` - Redis container for caching (requires Docker)
+- `sqlserver` - SQL Server container with persistent lifetime (requires Docker)
+  - `catalogdb` - Database for product catalog
 - `apiservice` - Backend API with health check at `/health`, references Redis
-- `webfrontend` - Blazor frontend with external HTTP endpoints, references API service and Redis, waits for API service
+- `webfrontend` - Blazor frontend with external HTTP endpoints, references API service, Redis, and SQL Server, waits for API service and SQL Server
 
 ### AspireTest.ApiService
 - **Purpose**: Backend API service providing weather forecast, task management, and caching
@@ -180,6 +182,47 @@ A complete Redis caching system with CRUD operations for cache management.
 - String-based storage with JSON serialization
 - Server.Keys() used for listing all keys (development only)
 
+## SQL Server Catalog Feature
+
+A product catalog system demonstrating SQL Server integration with Entity Framework Core.
+
+### Prerequisites
+**IMPORTANT**: This feature requires Docker Desktop to be installed and running on your system. .NET Aspire uses Docker to run SQL Server as a container.
+
+- **Install Docker Desktop**: https://www.docker.com/products/docker-desktop
+- **Verify Docker**: Run `docker --version` to confirm installation
+- Without Docker, the SQL Server container cannot start and the feature will not work
+
+### Infrastructure (AspireTest.AppHost)
+- **SQL Server Resource** (AspireTest.AppHost/AppHost.cs):
+  - Uses `Aspire.Hosting.SqlServer` package
+  - Configured with persistent lifetime to maintain data across restarts
+  - Database: `catalogdb` for product catalog data
+  - Referenced by webfrontend
+
+### Data Model
+- **Product Entity** (AspireTest.Web/Models/Product.cs:1):
+  - Id, Name, Description, Price, StockQuantity, CreatedDate
+  - Stored in SQL Server via Entity Framework Core
+  - Pre-seeded with 2 sample products
+
+### Database Context
+- **CatalogDbContext** (AspireTest.Web/Data/CatalogDbContext.cs:1):
+  - Configured with Product entity constraints (Name max 200 chars, Description max 1000 chars, Price as decimal(18,2))
+  - Includes seed data for initial products
+  - Registered in Program.cs using `builder.AddSqlServerDbContext<CatalogDbContext>("catalogdb")`
+
+### Frontend (AspireTest.Web)
+- **Products Page** (AspireTest.Web/Components/Pages/Products.razor:1): Product catalog display with card layout
+- Shows product name, price, description, stock quantity, and creation date
+- Navigation link in main menu (AspireTest.Web/Components/Layout/NavMenu.razor:42)
+
+### Technical Implementation
+- Uses `Microsoft.EntityFrameworkCore.SqlServer` via `Aspire.Microsoft.EntityFrameworkCore.SqlServer` integration
+- CatalogDbContext injected directly into Blazor components
+- EF Core migrations for database schema management
+- Async/await patterns for database operations
+
 ## Testing
 
 ### Run All Tests
@@ -209,7 +252,7 @@ dotnet test AspireTest.PlaywrightTests/AspireTest.PlaywrightTests.csproj
 - Full user workflow validation
 
 ### Test Infrastructure
-- MSTest framework for all test projects
+- NUnit framework for all test projects
 - Playwright for browser automation
 - WebApplicationFactory for integration testing
 - EF Core InMemory for isolated unit tests

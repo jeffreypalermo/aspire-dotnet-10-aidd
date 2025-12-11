@@ -1,10 +1,14 @@
 using AspireTest.Web;
 using AspireTest.Web.Components;
+using AspireTest.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
+
+// Add SQL Server DbContext
+builder.AddSqlServerDbContext<CatalogDbContext>("catalogdb");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
